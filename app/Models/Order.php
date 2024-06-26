@@ -49,4 +49,10 @@ class Order extends BaseModel
     {
         return $this->hasMany(OrderProduct::class);
     }
+
+    public function delete()
+    {
+        $this->is_deleted = 1;
+        return $this->save();
+    }
 }

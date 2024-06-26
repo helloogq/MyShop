@@ -18,7 +18,7 @@ class OrderController extends Controller
         $limit = request()->limit ?? 10;
         $orders = Order::when($customer_title, function ($query) use ($customer_title) {
             $query->where('customer_title', 'like', "%$customer_title%");
-        })->orderBy('id', 'desc')->paginate($limit);
+        })->where('is_deleted', 0)->orderBy('id', 'desc')->paginate($limit);
         return response()->json([
             'code' => 20000,
             'status' => 'success',
@@ -112,6 +112,14 @@ class OrderController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $order = Order::find($id);
+        $order->delete();
+        return response()->json([
+            'code' => 20000,
+            'status' => 'success',
+            'message' => 'delete order',
+            'data' => $order
+        ]);
+
     }
 }
