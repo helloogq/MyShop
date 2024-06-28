@@ -27,6 +27,25 @@ class OrderController extends Controller
         ]);
     }
 
+
+    /**
+     * 生成订单号
+     */
+    public function createOrderNo()
+    {
+        // 生成一个长度为12的随机字符串，其中字符串由数字和大写字母组成
+        $characters = '0123456789';
+        $randomString = '';
+        for ($i = 0; $i < 10; $i++) {
+            $index = random_int(0, strlen($characters) - 1);
+            $randomString .= $characters[$index];
+        }
+
+        return 'HY'.$randomString;
+    }
+
+
+
     /**
      * Store a newly created resource in storage.
      */
@@ -35,31 +54,29 @@ class OrderController extends Controller
         try {
             $request->validate([
                 'customer_title' => 'required',
-                'delivery_address_name' => 'required',
-                'delivery_address_phone' => 'required',
-                'delivery_address_province' => 'required',
-                'delivery_address_city' => 'required',
-                'delivery_address_district' => 'required',
-                'delivery_address_detail' => 'required',
-                'products' => 'required|array',
                 'products.*.id' => 'required',
                 'products.*.title' => 'required',
                 'products.*.specification' => 'required',
                 'products.*.quantity' => 'required',
                 'products.*.price' => 'required',
                 'products.*.total_price' => 'required',
-                'total_price' => 'required',
-                'status' => 'required', //订单状态 0 待支付 1 已支付 2 已取消 3 已完成
-                'delivery_method' => 'required', //配送方式 0 快递 1 自取 2 送货上门
-                'payment_method' => 'required', //支付方式 0 支付宝 1 微信 2 银行卡
-                'payment_status' => 'required', //支付状态 0 待支付 1 已支付 2 支付失败
+                'total_price' => 'required'
             ]);
-            Db::beginTransaction();
 
-            $request->merge([
-                'order_no' => 'abd123123'
-            ]);
-            $order = Order::create($request->all());
+            $data = $request->all();
+            $data['delivery_address_name'] = $request->input('delivery_address_name', '');
+            $data['delivery_address_phone'] = $request->input('delivery_address_phone', '');
+            $data['delivery_address_province'] = $request->input('delivery_address_province', '');
+            $data['delivery_address_city'] = $request->input('delivery_address_city', '');
+            $data['delivery_address_area'] = $request->input('delivery_address_area', '');
+            $data['delivery_address_detail'] = $request->input('delivery_address_detail', '');
+            $data['customer_title'] = $request->input('customer_title', '');
+            $data['customer_phone'] = $request->input('customer_phone', '');
+            $data['is_deleted'] = 0;
+            $data['order_no'] = $this->createOrderNo();
+
+            Db::beginTransaction();
+            $order = Order::create($data);
             $products = $request->products;
             for ($i=0; $i < count($products); $i++) {
                 $products[$i]['order_id'] = $order->id;
