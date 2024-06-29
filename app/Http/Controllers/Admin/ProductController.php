@@ -92,6 +92,7 @@ class ProductController extends Controller
         $product->title = $request->title;
         $product->price = $request->price;
         $product->weight = $request->weight;
+        $product->unit = $request->unit;
         if ($product->update()) {
             return  response()->json([
                 'code' => 20000,
