@@ -54,92 +54,97 @@ class CustomerController extends Controller
 
         $params = $request->all();
         //检查记录是否已存在
-        if (Customer::where('title', $params['title'])->exists()) { {
-            return  response()->json([
-                'code' => 20001,
-                'status' => 'error',
-                'message' => 'title already exists'
-            ]);
-        }
+        if (Customer::where('title', $params['title'])->exists()) {
+            {
+                return response()->json([
+                    'code' => 20001,
+                    'status' => 'error',
+                    'message' => 'title already exists'
+                ]);
+            }
 
-        $customer = new Customer();
-        $customer->title = $request->title;
-        $customer->contact = $request->contact;
-        $customer->contact_phone = $request->contact_phone;
-        $customer->contact_address = $request->contact_address;
-        $customer->is_supplier = $request->is_supplier ?? 0;
-        if ($customer->save()) {
-            return  response()->json([
-                'code' => 20000,
+            $customer = new Customer();
+            $customer->title = $request->title;
+            $customer->contact = $request->contact;
+            $customer->contact_phone = $request->contact_phone;
+            $customer->contact_address = $request->contact_address;
+            $customer->is_supplier = $request->is_supplier ?? 0;
+            if ($customer->save()) {
+                return response()->json([
+                    'code' => 20000,
+                    'status' => 'success',
+                    'message' => 'store success',
+                ]);
+            } else {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'store error'
+                ]);
+            }
+        }
+    }
+
+        /**
+         * Display the specified resource.
+         */
+        public
+        function show(string $id)
+        {
+            //
+            return response()->json([
                 'status' => 'success',
-                'message' => 'store succcess',
-            ]);
-        } else {
-            return  response()->json([
-                'status' => 'error',
-                'message' => 'store error'
+                'message' => 'show product',
+                'data' => Customer::find($id)
             ]);
         }
-    }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-        return response()->json([
-            'status' => 'success',
-            'message' => 'show product',
-            'data' => Customer::find($id)
-        ]);
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request)
-    {
-        $customer = Customer::find($request->id);
-        $customer->title = $request->title;
-        $customer->contact = $request->contact;
-        $customer->contact_phone = $request->contact_phone;
-        $customer->contact_address = $request->contact_address;
-        $customer->is_supplier = $request->is_supplier ?? 0;
-        if ($customer->update()) {
-            return  response()->json([
-                'code' => 20000,
-                'status' => 'success',
-                'message' => 'update customer',
-                'data' => $customer
-            ]);
-        } else {
-            return  response()->json([
-                'status' => 'error',
-                'message' => 'update error'
-            ]);
+        /**
+         * Update the specified resource in storage.
+         */
+        public
+        function update(Request $request)
+        {
+            $customer = Customer::find($request->id);
+            $customer->title = $request->title;
+            $customer->contact = $request->contact;
+            $customer->contact_phone = $request->contact_phone;
+            $customer->contact_address = $request->contact_address;
+            $customer->is_supplier = $request->is_supplier ?? 0;
+            if ($customer->update()) {
+                return response()->json([
+                    'code' => 20000,
+                    'status' => 'success',
+                    'message' => 'update customer',
+                    'data' => $customer
+                ]);
+            } else {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'update error'
+                ]);
+            }
         }
-    }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
-        $customer = Customer::find($id);
-        if ($customer->delete()) {
-            return  response()->json([
-                'code' => 20000,
-                'status' => 'success',
-                'message' => 'delete customer',
-                'data' => $customer
-            ]);
-        } else {
-            return  response()->json([
-                'status' => 'error',
-                'message' => 'delete error'
-            ]);
+        /**
+         * Remove the specified resource from storage.
+         */
+        public
+        function destroy(string $id)
+        {
+            //
+            $customer = Customer::find($id);
+            if ($customer->delete()) {
+                return response()->json([
+                    'code' => 20000,
+                    'status' => 'success',
+                    'message' => 'delete customer',
+                    'data' => $customer
+                ]);
+            } else {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'delete error'
+                ]);
+            }
         }
-    }
 }
