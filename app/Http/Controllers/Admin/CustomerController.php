@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Customer;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class CustomerController extends Controller
 {
@@ -17,7 +18,8 @@ class CustomerController extends Controller
     {
         $title = request()->title ?? false;
         $limit = request()->limit ?? 10;
-        $customers = Customer::when($title, function ($query) use ($title) {
+        $is_supplier = request()->is_supplier ?? 0;
+        $customers = Customer::where('is_supplier', $is_supplier)->when($title, function ($query) use ($title, $is_supplier) {
             $query->where('title', 'like', "%$title%");
         })->paginate($limit);
         return response()->json([
@@ -49,15 +51,28 @@ class CustomerController extends Controller
      */
     public function store(Request $request)
     {
-        //
-        $customers = new Customer();
-        $customers->title = $request->title;
-        if ($customers->save()) {
+
+        $params = $request->all();
+        //检查记录是否已存在
+        if (Customer::where('title', $params['title'])->exists()) { {
+            return  response()->json([
+                'code' => 20001,
+                'status' => 'error',
+                'message' => 'title already exists'
+            ]);
+        }
+
+        $customer = new Customer();
+        $customer->title = $request->title;
+        $customer->contact = $request->contact;
+        $customer->contact_phone = $request->contact_phone;
+        $customer->contact_address = $request->contact_address;
+        $customer->is_supplier = $request->is_supplier ?? 0;
+        if ($customer->save()) {
             return  response()->json([
                 'code' => 20000,
                 'status' => 'success',
                 'message' => 'store succcess',
-                'data' => $customers
             ]);
         } else {
             return  response()->json([
@@ -87,6 +102,10 @@ class CustomerController extends Controller
     {
         $customer = Customer::find($request->id);
         $customer->title = $request->title;
+        $customer->contact = $request->contact;
+        $customer->contact_phone = $request->contact_phone;
+        $customer->contact_address = $request->contact_address;
+        $customer->is_supplier = $request->is_supplier ?? 0;
         if ($customer->update()) {
             return  response()->json([
                 'code' => 20000,

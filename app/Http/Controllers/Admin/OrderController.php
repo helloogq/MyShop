@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\DB;
 class OrderController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * 销售列表
      */
     public function index()
     {
@@ -47,7 +47,7 @@ class OrderController extends Controller
 
 
     /**
-     * Store a newly created resource in storage.
+     * 创建销售订单
      */
     public function store(Request $request)
     {

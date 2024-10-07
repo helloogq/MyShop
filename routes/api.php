@@ -22,12 +22,27 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 
+// 添加用户
+Route::post('/add_user', function (Request $request) {
+    // 密码版
+    $user = new \App\Models\User();
+    $user->name = $request->input("name");
+    $user->account = $request->input("account");
+    $user->email = $request->input("email");
+    // 需要通过 Hash::make 加密后，才能使用 Auth::attempt 验证密码正确性
+    $user->password = Hash::make($request->input("password"));
+    $user->save();
+    return $user;
+});
+
 Route::group(['prefix' => 'admin'], function () {
+
+
 
     //用户接口
     Route::post('/user/login', [\App\Http\Controllers\Admin\UserController::class, 'login']);
     Route::post('/user/logout', [\App\Http\Controllers\Admin\UserController::class, 'logout']);
-    Route::get('/user/info', [\App\Http\Controllers\Admin\UserController::class, 'info']);
+    Route::get('/user/info', [\App\Http\Controllers\Admin\UserController::class, 'info'])->middleware(\App\Http\Middleware\EnsureTokenIsValid::class);
     Route::get('/area', [\App\Http\Controllers\Admin\AreaController::class, 'getChildList']);
 
     //产品接口
